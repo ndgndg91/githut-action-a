@@ -37,8 +37,9 @@ jobs:
       - name: Trigger new Operation-Resource actions for Deployment
         run: |
           tag=${{ env.RELEASE_VERSION }}
-          token=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          token="${{ secrets.PERSONAL_ACCESS_TOKEN }}"
           user="ndgndg91:$token"
+          echo "token: $token"
           echo "tag: $tag"
           echo "user: $user"
           curl -X POST https://api.github.com/repos/ndgndg91/github-action-b/dispatches \
