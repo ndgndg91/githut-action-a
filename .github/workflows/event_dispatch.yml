@@ -37,6 +37,7 @@ jobs:
       - name: Trigger new Operation-Resource actions for Deployment
         run: |
           tag=${{ env.RELEASE_VERSION }}
+          token=${{ secrets.PERSONAL_ACCESS_TOKEN }}
           echo "tag: $tag"
           curl -X POST https://api.github.com/repos/ndgndg91/github-action-b/dispatches \
           -H 'Accept: application/vnd.github.v3+json' \
