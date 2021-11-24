@@ -1,0 +1,43 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: checkout
+      - uses: actions/checkout@v2
+      
+      - name: Print github event
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      
+      - name: Set env to production
+        run: |
+          if [[ ${{ github.event.ref }} =~ ^refs/tags/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          fi
+        
+      - name: Trigger new Operation-Resource actions for Deployment
+        run: |
+          tag=${{ env.RELEASE_VERSION }}
+          echo "tag: $tag"
+          curl -X POST https://api.github.com/repos/ndgndg91/github-action-b/dispatches \
+          -H 'Accept: application/vnd.github.v3+json' \
+          --data '{"event_type": "backend-tagging", "client_payload": { "tag": "'"$tag"'"}'
